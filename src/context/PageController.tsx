@@ -58,8 +58,6 @@ export const PageControllerProvider = ({
   };
 
   const showNextButton = (delay?: number) => {
-    console.log("showNextButton called with delay:", delay);
-
     // Clear any existing timeout before setting a new one
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -67,14 +65,11 @@ export const PageControllerProvider = ({
     }
 
     if (delay !== undefined && delay > 0) {
-      console.log("Setting timeout for:", delay, "ms");
       timeoutRef.current = setTimeout(() => {
-        console.log("Timeout fired, showing button");
         setNextButtonVisible(true);
         timeoutRef.current = null;
       }, delay);
     } else {
-      console.log("Showing button immediately");
       setNextButtonVisible(true);
     }
   };

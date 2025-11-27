@@ -61,7 +61,7 @@ const Intro = forwardRef<SectionHandle>((_, ref) => {
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.3, delay: 0.2, ease: "easeInOut" }}
             animate={titleExit}
-            className="relative z-2"
+            className="relative z-2 w-fit mx-auto"
           >
             <RotatingBorderTitle>
               <motion.h1
@@ -114,7 +114,7 @@ const Intro = forwardRef<SectionHandle>((_, ref) => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 4, ease: "easeOut" }}
-          className="absolute bottom-8 right-10 text-lg"
+          className="absolute bottom-9 right-6 text-lg"
           animate={authorExit}
         >
           par Armen Asriyan

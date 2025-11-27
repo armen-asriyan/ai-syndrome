@@ -17,6 +17,8 @@ import {
   Group,
   Circle,
   Line,
+  Text,
+  Arrow,
 } from "react-konva";
 import Konva from "konva";
 import useImage from "use-image";
@@ -70,7 +72,7 @@ const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [smileScaleY, setSmileScaleY] = useState(0.8);
-  const [smileY, setSmileY] = useState(190);
+  const [smileY, setSmileY] = useState(15);
 
   // Drawing state
   const [isDrawingMode, setIsDrawingMode] = useState(false);
@@ -114,7 +116,7 @@ const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
 
     if (trashbinNode && checkCollision(codingNode, trashbinNode)) {
       setSmileScaleY((prev) => prev * -1);
-      setSmileY((prev) => (prev === 190 ? 400 : 190));
+      setSmileY((prev) => (prev === 190 ? 0 : 210));
       codingRef.current?.visible(false);
     }
   };
@@ -244,61 +246,81 @@ const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
               filters={[Konva.Filters.Blur]}
               blurRadius={32}
             />
-            <Image
-              image={stickmanImage}
+            <Group
               x={stageSize.width / 9}
               y={stageSize.height / 4}
-              width={400}
-              height={400}
-            />
-            <GifKonvaImage
-              src="img/propeller-hat.gif"
-              width={200}
-              height={100}
-              x={260}
-              y={150}
-            />
-            <Path
-              x={280}
-              y={smileY}
-              data="m136.81 116.53c.69 26.17-64.11 42-81.52-.73"
-              fill="white"
-              stroke="black"
-              scaleX={0.8}
-              scaleY={smileScaleY}
-              strokeWidth={20}
-              lineJoin="round"
-              lineCap="round"
-              name="smile"
-            />
-            <Group
-              ref={codingRef}
-              draggable
-              x={150}
-              y={100}
-              name="coding"
-              onDragEnd={handleCodingDragEnd}
+              name="stickman-container"
             >
-              <Rect
-                x={250}
-                y={200}
-                width={80}
-                height={80}
-                fill="black"
-                cornerRadius={20}
-                shadowEnabled
+              {/* Stickman */}
+              <Image
+                image={stickmanImage}
+                width={400}
+                height={400}
+                name="stickman"
+              />
+              <GifKonvaImage
+                src="img/propeller-hat.gif"
+                x={100} // ← adjust these two
+                y={-50} // ← until it sits right on the head
+                width={200}
+                height={120}
+                draggable
               />
               <Path
-                x={270}
-                y={225}
-                data="M12.7361611,0.063952038 C13.2551391,0.263360331 13.5227261,0.869148905 13.3338336,1.41701869 L8.54555162,15.3051026 C8.35665911,15.8529724 7.78281676,16.1354563 7.26383885,15.936048 C6.74486095,15.7366397 6.47727387,15.1308511 6.66616638,14.5829813 L11.4544484,0.694897379 C11.6433409,0.147027596 12.2171832,-0.135456255 12.7361611,0.063952038 Z M2.41421356,8.25614867 L5.94974747,11.9885083 C6.34027176,12.4007734 6.34027176,13.0691871 5.94974747,13.4814522 C5.55922318,13.8937173 4.9260582,13.8937173 4.53553391,13.4814522 L0.292893219,9.0026206 C-0.0976310729,8.59035554 -0.0976310729,7.9219418 0.292893219,7.50967674 L4.53553391,3.03084515 C4.9260582,2.61858008 5.55922318,2.61858008 5.94974747,3.03084515 C6.34027176,3.44311021 6.34027176,4.11152395 5.94974747,4.52378901 L2.41421356,8.25614867 Z M17.5857864,8.25614867 L14.0502525,4.52378901 C13.6597282,4.11152395 13.6597282,3.44311021 14.0502525,3.03084515 C14.4407768,2.61858008 15.0739418,2.61858008 15.4644661,3.03084515 L19.7071068,7.50967674 C20.0976311,7.9219418 20.0976311,8.59035554 19.7071068,9.0026206 L15.4644661,13.4814522 C15.0739418,13.8937173 14.4407768,13.8937173 14.0502525,13.4814522 C13.6597282,13.0691871 13.6597282,12.4007734 14.0502525,11.9885083 L17.5857864,8.25614867 Z"
+                x={120}
+                y={smileY}
+                data="m136.81 116.53c.69 26.17-64.11 42-81.52-.73"
                 fill="white"
-                stroke="transparent"
-                scaleX={2}
-                scaleY={2}
-                strokeWidth={1}
+                stroke="black"
+                scaleX={0.8}
+                scaleY={smileScaleY}
+                strokeWidth={20}
+                lineJoin="round"
+                lineCap="round"
+                name="smile"
               />
+              <Group
+                ref={codingRef}
+                draggable
+                x={10}
+                y={-80}
+                name="coding"
+                onDragEnd={handleCodingDragEnd}
+              >
+                <Rect
+                  x={245}
+                  y={195}
+                  width={90}
+                  height={90}
+                  fill="black"
+                  strokeWidth={4}
+                  cornerRadius={20}
+                  shadowEnabled
+                />
+                <Rect
+                  x={250}
+                  y={200}
+                  width={80}
+                  height={80}
+                  fill="black"
+                  stroke="white"
+                  strokeWidth={4}
+                  cornerRadius={20}
+                  shadowEnabled
+                />
+                <Path
+                  x={270}
+                  y={225}
+                  data="M12.7361611,0.063952038 C13.2551391,0.263360331 13.5227261,0.869148905 13.3338336,1.41701869 L8.54555162,15.3051026 C8.35665911,15.8529724 7.78281676,16.1354563 7.26383885,15.936048 C6.74486095,15.7366397 6.47727387,15.1308511 6.66616638,14.5829813 L11.4544484,0.694897379 C11.6433409,0.147027596 12.2171832,-0.135456255 12.7361611,0.063952038 Z M2.41421356,8.25614867 L5.94974747,11.9885083 C6.34027176,12.4007734 6.34027176,13.0691871 5.94974747,13.4814522 C5.55922318,13.8937173 4.9260582,13.8937173 4.53553391,13.4814522 L0.292893219,9.0026206 C-0.0976310729,8.59035554 -0.0976310729,7.9219418 0.292893219,7.50967674 L4.53553391,3.03084515 C4.9260582,2.61858008 5.55922318,2.61858008 5.94974747,3.03084515 C6.34027176,3.44311021 6.34027176,4.11152395 5.94974747,4.52378901 L2.41421356,8.25614867 Z M17.5857864,8.25614867 L14.0502525,4.52378901 C13.6597282,4.11152395 13.6597282,3.44311021 14.0502525,3.03084515 C14.4407768,2.61858008 15.0739418,2.61858008 15.4644661,3.03084515 L19.7071068,7.50967674 C20.0976311,7.9219418 20.0976311,8.59035554 19.7071068,9.0026206 L15.4644661,13.4814522 C15.0739418,13.8937173 14.4407768,13.8937173 14.0502525,13.4814522 C13.6597282,13.0691871 13.6597282,12.4007734 14.0502525,11.9885083 L17.5857864,8.25614867 Z"
+                  fill="white"
+                  stroke="transparent"
+                  scaleX={2}
+                  scaleY={2}
+                  strokeWidth={1}
+                />
+              </Group>
             </Group>
+
             <Group name="trashbin" draggable>
               <Rect
                 x={stageSize.width / 1.9}
@@ -333,6 +355,117 @@ const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
                 lineJoin="round"
                 globalCompositeOperation="source-over"
               />
+            ))}
+          </Layer>
+
+          {/* Soft skill cards  */}
+          <Layer>
+            <Group>
+              <Text
+                x={stageSize.width - 200}
+                y={500}
+                rotationDeg={-90}
+                text="Soft Skills"
+                fontSize={90}
+                fontFamily="Alsina Ultrajada"
+                fill="white"
+                stroke="black"
+                strokeWidth={1.5}
+              />
+              <Arrow
+                x={stageSize.width - 130}
+                y={350}
+                points={[0, 0, 50, 0]}
+                pointerLength={15}
+                pointerWidth={15}
+                fill="white"
+                stroke="black"
+                strokeWidth={1.5}
+                lineCap="round"
+                lineJoin="round"
+              />
+            </Group>
+            {[
+              {
+                title: "Planification Stratégique",
+                text: "Définir les besoins, élaborer des feuilles de route, anticiper les défis.",
+                color: "#FEE2E2",
+              },
+              {
+                title: "Design UX/UI",
+                text: "Créer des expériences intuitives et agréables pour l'utilisateur.",
+                color: "#E0E7FF",
+              },
+              {
+                title: "Tests et Validation",
+                text: "Comprendre les retours utilisateurs, adapter et itérer.",
+                color: "#DCFCE7",
+              },
+              {
+                title: "Interaction Humaine",
+                text: "Communication, collaboration, mentorat et résolution de conflits.",
+                color: "#FAE8FF",
+              },
+            ].map((card, i) => (
+              <Group
+                key={i}
+                draggable
+                x={stageSize.width - 50} // → mostly outside the right edge
+                y={100 + i * 160} // → vertical stacking
+                name={`softskill-${i}`}
+              >
+                <Rect
+                  width={360}
+                  height={140}
+                  fill={card.color}
+                  cornerRadius={20}
+                  shadowBlur={10}
+                  shadowOpacity={0.2}
+                />
+
+                <Group name={`softskill-${i}-content`} y={-45}>
+                  <Path
+                    x={-10}
+                    y={35}
+                    scale={{ x: 2, y: 2 }}
+                    data="M12.6,13   c0.5-0.2,1.4-0.1,1.7,0.5c0.2,0.5,0.4,1.2,0.4,1.1c0-0.4,0-1.2,0.1-1.6c0.1-0.3,0.3-0.6,0.7-0.7c0.3-0.1,0.6-0.1,0.9-0.1   c0.3,0.1,0.6,0.3,0.8,0.5c0.4,0.6,0.4,1.9,0.4,1.8c0.1-0.3,0.1-1.2,0.3-1.6c0.1-0.2,0.5-0.4,0.7-0.5c0.3-0.1,0.7-0.1,1,0   c0.2,0,0.6,0.3,0.7,0.5c0.2,0.3,0.3,1.3,0.4,1.7c0,0.1,0.1-0.4,0.3-0.7c0.4-0.6,1.8-0.8,1.9,0.6c0,0.7,0,0.6,0,1.1   c0,0.5,0,0.8,0,1.2c0,0.4-0.1,1.3-0.2,1.7c-0.1,0.3-0.4,1-0.7,1.4c0,0-1.1,1.2-1.2,1.8c-0.1,0.6-0.1,0.6-0.1,1   c0,0.4,0.1,0.9,0.1,0.9s-0.8,0.1-1.2,0c-0.4-0.1-0.9-0.8-1-1.1c-0.2-0.3-0.5-0.3-0.7,0c-0.2,0.4-0.7,1.1-1,1.1   c-0.7,0.1-2.1,0-3.1,0c0,0,0.2-1-0.2-1.4c-0.3-0.3-0.8-0.8-1.1-1.1l-0.8-0.9c-0.3-0.4-1-0.9-1.2-2c-0.2-0.9-0.2-1.4,0-1.8   c0.2-0.4,0.7-0.6,0.9-0.6c0.2,0,0.7,0,0.9,0.1c0.2,0.1,0.3,0.2,0.5,0.4c0.2,0.3,0.3,0.5,0.2,0.1c-0.1-0.3-0.3-0.6-0.4-1   c-0.1-0.4-0.4-0.9-0.4-1.5C11.7,13.9,11.8,13.3,12.6,13z"
+                    fill="white"
+                    stroke="black"
+                    strokeWidth={0.5}
+                  />
+
+                  <Text
+                    text={(i + 1).toString()}
+                    x={20}
+                    y={65}
+                    width={24}
+                    fontSize={14}
+                    fontStyle="bold"
+                    fill="#1F2937"
+                    name="count"
+                  />
+                </Group>
+
+                <Text
+                  text={card.title}
+                  x={40}
+                  y={16}
+                  width={320}
+                  fontSize={22}
+                  fontStyle="bold"
+                  fill="#1F2937"
+                  name="title"
+                />
+
+                <Text
+                  text={card.text}
+                  x={40}
+                  y={54}
+                  width={315}
+                  fontSize={18}
+                  fill="#374151"
+                />
+              </Group>
             ))}
           </Layer>
         </Stage>

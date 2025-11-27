@@ -18,19 +18,22 @@ interface GifImageProps {
 }
 
 interface GifFrame {
-  width: number;
-  height: number;
+  buffer: HTMLCanvasElement;
   x: number;
   y: number;
-  buffer: HTMLCanvasElement;
-  disposal?: number;
+  width: number;
+  height: number;
+}
+
+interface GiflerAnimation {
+  stop: () => void;
 }
 
 interface GiflerInstance {
   frames: (
     canvas: HTMLCanvasElement,
-    callback: (ctx: CanvasRenderingContext2D, frame: GifFrame) => void
-  ) => void;
+    cb: (ctx: CanvasRenderingContext2D, frame: GifFrame) => void
+  ) => GiflerAnimation;
 }
 
 declare global {
@@ -55,93 +58,58 @@ const GifKonvaImage: React.FC<GifImageProps> = ({
 }) => {
   const imageRef = React.useRef<Konva.Image | null>(null);
   const [canvas] = React.useState(() => document.createElement("canvas"));
-  const canvasSizeSetRef = React.useRef<boolean>(false);
-  const scriptLoadedRef = React.useRef<boolean>(false);
-  const frameCountRef = React.useRef<number>(0);
-  const giflerInstanceRef = React.useRef<GiflerInstance | null>(null);
+  const animationRef = React.useRef<GiflerAnimation | null>(null);
 
   React.useEffect(() => {
-    const loadGif = () => {
+    let isMounted = true;
+
+    const start = () => {
       if (!window.gifler) {
         onError?.(new Error("Gifler library not loaded"));
         return;
       }
 
-      try {
-        frameCountRef.current = 0;
+      // Stop previous animation
+      animationRef.current?.stop();
 
-        const onDrawFrame = (
-          ctx: CanvasRenderingContext2D,
-          frame: GifFrame
-        ) => {
-          frameCountRef.current++;
+      // const ctx = canvas.getContext("2d");
 
-          // Set canvas size once based on the full GIF dimensions
-          if (
-            !canvasSizeSetRef.current &&
-            frame.buffer.width &&
-            frame.buffer.height
-          ) {
-            const gifWidth = frame.buffer.width;
-            const gifHeight = frame.buffer.height;
-            canvas.width = gifWidth;
-            canvas.height = gifHeight;
-            canvasSizeSetRef.current = true;
-          }
+      animationRef.current = window.gifler(src).frames(canvas, (ctx, frame) => {
+        if (!isMounted) return;
 
-          // Draw frame
-          ctx.drawImage(frame.buffer, frame.x, frame.y);
-          imageRef.current?.getLayer()?.batchDraw();
+        // Resize once
+        if (canvas.width !== frame.buffer.width) {
+          canvas.width = frame.buffer.width;
+          canvas.height = frame.buffer.height;
+        }
 
-          // If we've seen many frames (indicating we might be near the end),
-          // restart the animation to avoid the last frame
-          if (frameCountRef.current > 30) {
-            // Adjust this number based on your GIF
-            frameCountRef.current = 0;
-            // Restart the GIF
-            setTimeout(() => {
-              if (giflerInstanceRef.current) {
-                const ctx = canvas.getContext("2d");
-                if (ctx) {
-                  ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
-                giflerInstanceRef.current.frames(canvas, onDrawFrame);
-              }
-            }, 100);
-          }
-        };
+        // Draw frame
+        ctx.drawImage(frame.buffer, frame.x, frame.y);
 
-        giflerInstanceRef.current = window.gifler(src);
-        giflerInstanceRef.current.frames(canvas, onDrawFrame);
-        onLoad?.();
-      } catch (error) {
-        onError?.(error as Error);
-      }
+        // Update Konva layer
+        imageRef.current?.getLayer()?.batchDraw();
+      });
+
+      onLoad?.();
     };
 
-    if (scriptLoadedRef.current) {
-      loadGif();
-      return;
+    // Load script only once globally
+    if (!window.gifler) {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/gifler@0.1.0/gifler.min.js";
+
+      script.onload = start;
+      script.onerror = () =>
+        onError?.(new Error("Failed to load gifler library"));
+
+      document.head.appendChild(script);
+    } else {
+      start();
     }
 
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/gifler@0.1.0/gifler.min.js";
-
-    script.onload = () => {
-      scriptLoadedRef.current = true;
-      loadGif();
-    };
-
-    script.onerror = () => {
-      onError?.(new Error("Failed to load gifler library"));
-    };
-
-    document.head.appendChild(script);
-
     return () => {
-      if (document.head.contains(script)) {
-        script.remove();
-      }
+      isMounted = false;
+      animationRef.current?.stop();
     };
   }, [src, onLoad, onError, canvas]);
 

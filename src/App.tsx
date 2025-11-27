@@ -6,6 +6,8 @@ import FullBorders from "./components/FullBorders";
 import AIReplacementFear from "./components/pages/AIReplacementFear";
 import JuniorDeveloperDilemma from "./components/pages/JuniorDevDilemma";
 import IntrinsicValues from "./components/pages/IntrinsicValues";
+import OpportunityFromThreat from "./components/pages/OpportunityFromThreat";
+import Conclusion from "./components/pages/Conclustion";
 
 function App() {
   return (
@@ -25,6 +27,14 @@ function App() {
 
         <Section id="intrinsic-values-page">
           {(ref) => <IntrinsicValues ref={ref} />}
+        </Section>
+
+        <Section id="opportunity-page">
+          {(ref) => <OpportunityFromThreat ref={ref} />}
+        </Section>
+
+        <Section id="conclusion-page">
+          {(ref) => <Conclusion ref={ref} />}
         </Section>
 
         <NextButton />
