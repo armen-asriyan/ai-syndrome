@@ -124,7 +124,7 @@ const Intro = forwardRef<SectionHandle>((_, ref) => {
       <div className="overflow-hidden w-1/2 h-fit absolute bottom-[-5%] left-1">
         <video
           id="intro-video"
-          src="/video/vent.webm"
+          src="video/vent.webm"
           playsInline
           className="pointer-events-none ml-2 w-full hidden"
           onEnded={(e) => (e.currentTarget.style.display = "none")}

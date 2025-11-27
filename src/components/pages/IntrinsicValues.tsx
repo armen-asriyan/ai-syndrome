@@ -28,7 +28,7 @@ import type { KonvaEventObject } from "konva/lib/Node";
 
 const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
   const { showNextButton } = usePageController();
-  const [stickmanImage] = useImage("/img/stickman.png");
+  const [stickmanImage] = useImage("img/stickman.png");
 
   // Exit animation controls
   const titleExit = useAnimationControls();
@@ -364,7 +364,7 @@ const IntrinsicValues = forwardRef<SectionHandle>((_, ref) => {
               <Text
                 x={stageSize.width - 200}
                 y={500}
-                rotationDeg={-90}
+                rotation={-90}
                 text="Soft Skills"
                 fontSize={90}
                 fontFamily="Alsina Ultrajada"
